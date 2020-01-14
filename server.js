@@ -3,6 +3,7 @@ const fs = require("fs");
 const path = require("path");
 const app = express();
 
+// port?
 const PORT = 3000;
 
 app.use(express.urlencoded({ extended: true }));
@@ -30,6 +31,7 @@ app.post("/api/notes", function(req, res) {
     if (err) return console.error(err);
     let theJSON = JSON.parse(data);
     console.log(theJSON);
+    newNote.id = theJSON.length + 1;
     theJSON.push(newNote);
     write(theJSON);
   });
