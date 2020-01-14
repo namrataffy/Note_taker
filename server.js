@@ -12,24 +12,45 @@ app.get("/notes", function(req, res) {
   res.sendFile(path.join(__dirname, "public/notes.html"));
 });
 
-app.get("*", function(req, res) {
-  res.sendFile(path.join(__dirname, "public/index.html"));
-});
-
 app.get("/api/notes", function(req, res) {
-  let theJSON = fs.readFile("./db/db.json", function(err, data) {
+  let theJSON = null;
+  fs.readFile("./db/db.json", function(err, data) {
+    console.log(data);
     if (err) return console.error(err);
-    let X = JSON.parse(data);
-    console.log(X);
-    return X;
+    theJSON = JSON.parse(data);
+    res.json(theJSON);
   });
-  console.log(theJSON);
-  res.json(theJSON);
 });
 
 app.post("/api/notes", function(req, res) {
   var newNote = req.body;
   console.log(newNote);
+  // let theJSON = null;
+  fs.readFile("./db/db.json", function(err, data) {
+    if (err) return console.error(err);
+    let theJSON = JSON.parse(data);
+    console.log(theJSON);
+    theJSON.push(newNote);
+    write(theJSON);
+  });
+
+  function write(theJSON) {
+    fs.writeFile("./db/db.json", JSON.stringify(theJSON), function(err, data) {
+      if (err) return console.log(err);
+      console.log("saved");
+    });
+    let responder = {
+      noteTitle: req.body.title,
+      noteContent: req.body.text,
+      ID: theJSON.length
+    };
+
+    res.json(responder);
+  }
+});
+
+app.get("*", function(req, res) {
+  res.sendFile(path.join(__dirname, "public/index.html"));
 });
 
 app.listen(PORT, function() {
