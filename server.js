@@ -8,6 +8,7 @@ const PORT = 3000;
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
+app.use(express.static("public"));
 
 app.get("/notes", function(req, res) {
   res.sendFile(path.join(__dirname, "public/notes.html"));
@@ -19,6 +20,9 @@ app.get("/api/notes", function(req, res) {
     console.log(data);
     if (err) return console.error(err);
     theJSON = JSON.parse(data);
+    for (let i = 0; i < theJSON.length; ++i) {
+      theJSON[i].id = i + 1;
+    }
     res.json(theJSON);
   });
 });
@@ -31,7 +35,7 @@ app.post("/api/notes", function(req, res) {
     if (err) return console.error(err);
     let theJSON = JSON.parse(data);
     console.log(theJSON);
-    newNote.id = theJSON.length + 1;
+    // newNote.id = theJSON.length + 1;
     theJSON.push(newNote);
     write(theJSON);
   });
